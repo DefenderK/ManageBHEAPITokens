@@ -23,7 +23,9 @@ Supported settings (also available as process environment variables):
 
 Precedence is **explicit parameter > .env value > process environment**, independently for each setting. An explicitly empty value clears that setting rather than falling back. If the default `.env` is absent, process environment variables still work. An explicitly selected missing/unreadable file, duplicate/unsupported key, or malformed assignment stops execution before API access.
 
-`.env` credentials are plaintext: restrict access and keep real secrets out of source control and command history. `.env` and `.env.*` are ignored by Git, with `.env.example` allowed. Values are literal: optional matching single/double quotes are stripped, but `$`, backticks, `#`, and `=` within values are preserved. No expressions, variable expansion, escape decoding, multiline values, or inline comments are supported. Use separate lines beginning with `#` for comments. The optional `export KEY=value` form is accepted. Loading a file does not modify the process environment. The script does not perform username/password login.
+`.env` credentials are plaintext: restrict access and keep real secrets out of source control and command history. `.env` and `.env.*` are ignored by Git, with `.env.example` allowed. 
+Values are literal: optional matching single/double quotes are stripped, but `$`, backticks, `#`, and `=` within values are preserved. No expressions, variable expansion, escape decoding, multiline values, or inline comments are supported. 
+Use separate lines beginning with `#` for comments. The optional `export KEY=value` form is accepted. Loading a file does not modify the process environment. The script does not perform username/password login.
 
 ```powershell
 # Default interactive menu, initial stale threshold 90 days.
@@ -88,7 +90,8 @@ Row TokenType Name                            Owner             Role          La
 Choose an option:
 ```
 
-The initial view includes **TokenType**, name, owner, role, last access, and eligibility status, with numbered rows and totals. TokenType is `User` when the token has a valid user-owner UUID, `Collector` when its exact token ID matches a collector detail record, and `Unknown` when neither can be established. Collector identification takes precedence if both are present, and the token is protected.
+The initial view includes **TokenType**, name, owner, role, last access, and eligibility status, with numbered rows and totals. TokenType is `User` when the token has a valid user-owner UUID, `Collector` when its exact token ID matches a collector detail record, and `Unknown` when neither can be established. 
+Collector identification takes precedence if both are present, and the token is protected.
 
 **Role means the owning user's current role**, rather than a separate permission assigned to the token. For collector tokens, Owner shows the collector name (or ID if unnamed) and Role is `N/A`. A blank token Name is filled with the collector name for display; JSON/details preserve the original label in `TokenName`, alongside `CollectorId`, `CollectorName`, `CollectorType`, and `CollectorLastCheckin`. Matched collector tokens have status **`CollectorTokenProtected`** and cannot be revoked through this user-token cleanup utility. Unresolved tokens retain `Unknown` owner/role and remain ineligible.
 
@@ -186,21 +189,5 @@ The token endpoint supports time predicates and user filters, but this utility c
 
 Official references:
 
-- [Token-list OpenAPI](https://github.com/SpecterOps/BloodHound/blob/main/packages/go/openapi/src/paths/tokens.tokens.yaml)
-- [Token-delete OpenAPI](https://github.com/SpecterOps/BloodHound/blob/main/packages/go/openapi/src/paths/tokens.tokens.id.yaml)
-- [User-list OpenAPI](https://github.com/SpecterOps/BloodHound/blob/main/packages/go/openapi/src/paths/bh-users.bloodhound-users.yaml)
-- [User schema and role membership](https://github.com/SpecterOps/BloodHound/blob/main/packages/go/openapi/src/schemas/model.user.yaml)
-- [Collector-list contract](https://github.com/SpecterOps/BloodHound/blob/main/packages/go/openapi/src/paths/clients.clients.yaml)
-- [Collector-detail contract](https://github.com/SpecterOps/BloodHound/blob/main/packages/go/openapi/src/paths/clients.clients.id.yaml)
-- [Server permission checks](https://github.com/SpecterOps/BloodHound/blob/main/cmd/api/src/api/v2/auth/auth.go)
 - [Authentication and tenant API Explorer](https://bloodhound.specterops.io/integrations/bloodhound-api/working-with-api)
 
-## Validation
-
-```powershell
-powershell -NoProfile -File .\tests\Test-Cleanup.ps1
-```
-
-Offline tests mock HTTP and prompts. They cover eligibility, timestamp boundaries/offsets, protection/exclusions, default menu navigation, roles, sorting/search, return/cancellation, export and audit events, simulation modes, revocation approval/revalidation, limits, malformed/duplicate inventories, unavailable owner lookup, ambiguous DELETE failure, and secret-free evidence. Configuration tests cover default/custom/disabled dotenv loading, precedence, explicit empty values, literal parsing, missing/malformed files, and credential-free logs. Generated artifacts remain under `tests/artifacts-*` for inspection.
-
-Collector lookup and exact token-ID matching have been checked with read-only calls against the local test tenant. Production revocation has not been validated. This is a custom administration utility, not an official SpecterOps-supported tool.
