@@ -1,0 +1,6 @@
+reports/
+tests/artifacts-*/
+tests/latest-test-output.txt
+.env
+.env.*
+!.env.example
